@@ -19,11 +19,11 @@ class BooksController extends Controller
     {
         //
 
-        $contact = Auth::user()->contact;
+        $books = Book::all();
 
         return response()->json([
             'status' => 'ok',
-            'books' => $contact,
+            'books' => $books,
         ], 200);
     }
 
