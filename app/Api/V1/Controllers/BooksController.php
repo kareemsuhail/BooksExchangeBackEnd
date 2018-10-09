@@ -23,7 +23,7 @@ class BooksController extends Controller
 
         return response()->json([
             'status' => 'ok',
-            'books' => $books,
+            'books' => $booksbooksbok,
         ], 200);
     }
 

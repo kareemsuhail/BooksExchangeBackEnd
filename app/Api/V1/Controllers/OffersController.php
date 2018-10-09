@@ -110,5 +110,8 @@ class OffersController extends Controller
     public function destroy($id)
     {
         Offer::destroy($id);
+        return response()->json([
+            "status" => "ok"
+        ], 201);
     }
 }
