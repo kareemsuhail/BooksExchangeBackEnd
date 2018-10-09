@@ -11,4 +11,7 @@ class Book extends Model
     {
         return $this->belongsTo('App\User');
     }
+    public function offer(){
+        return $this->hasOne('App\Offer');
+    }
 }

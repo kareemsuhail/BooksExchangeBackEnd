@@ -18,11 +18,12 @@ class BooksController extends Controller
     public function index()
     {
         //
-        $books = Book::all();
+
+        $contact = Auth::user()->contact;
 
         return response()->json([
             'status' => 'ok',
-            'books' => $books,
+            'books' => $contact,
         ], 200);
     }
 

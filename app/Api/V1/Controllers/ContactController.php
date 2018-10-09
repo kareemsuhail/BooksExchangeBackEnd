@@ -2,14 +2,15 @@
 
 namespace App\Api\V1\Controllers;
 
-use App\Offer;
-use App\Book;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Contact;
+use App\User;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use DB;
 
-class OffersController extends Controller
+
+class ContactController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,11 +19,9 @@ class OffersController extends Controller
      */
     public function index()
     {
-        $offers = Offer::all();
-
+        $contact = Auth::user()->contact;
         return response()->json([
-            'status' => 'ok',
-            'offers' => $offers,
+            'contact' => $contact,
         ], 200);
     }
 
@@ -44,15 +43,15 @@ class OffersController extends Controller
      */
     public function store(Request $request)
     {
-
-        $offer = new Offer();
-        $offer->type = $request->input("type");
-        $offer->book_id = $request->input("book_id");
-        $offer->save();
-
+        $contact = new Contact();
+        $contact->facebook_url = $request->input("facebook_url");
+        $contact->phone_number = $request->input("phone_number");
+        $contact->user_id = Auth::id();
+        $contact->save();
         return response()->json([
             "status" => "ok"
         ], 201);
+
     }
 
     /**
@@ -63,9 +62,9 @@ class OffersController extends Controller
      */
     public function show($id)
     {
-        $offer = Offer::find($id);
+        $user  = User::find($id);
         return response()->json([
-            'book' => $offer,
+            'book' => $user->contact,
         ], 200);
     }
 
@@ -89,15 +88,19 @@ class OffersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'type' => 'required|max:255',
-        ]);
-        $offer = Offer::find($id);
-        $offer->type = $request->input("type");
-        $offer->save();
-        return response()->json([
-            "status" => "ok"
-        ], 201);
+        $contact = Contact::find($id);
+        if(Auth::id() == $contact->user_id){
+            $contact->facebook_url = $request->input("facebook_url");
+            $contact->phone_number = $request->input("phone_number");
+            $contact->save();
+            return response()->json([
+                "status" => "ok"
+            ], 201);
+        }else{
+            return response()->json([
+                "msg" => "you are not authorized"
+            ], 401);
+        }
 
     }
 
@@ -109,6 +112,16 @@ class OffersController extends Controller
      */
     public function destroy($id)
     {
-        Offer::destroy($id);
+        $contact = Contact::find($id);
+        if (Auth::id() == $contact->user_id){
+            Contact::destroy($id);
+            return response()->json([
+                "status" => "ok"
+            ], 201);
+        }else{
+            return response()->json([
+                "msg" => "you are not authorized"
+            ], 401);
+        }
     }
 }
